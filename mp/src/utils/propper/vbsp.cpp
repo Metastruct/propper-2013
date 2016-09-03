@@ -2452,7 +2452,19 @@ int RunVBSP( int argc, char **argv )
 		ProcessModels ();
 				
 		//char basename[128];//Not used?
-		if (!sourcefolder) sourcefolder = &targetPath[0];//put source files in with vmf by default.
+		if (!sourcefolder || sourcefolder[0]=='\0') {
+			sourcefolder = getenv("QC_STORAGE");
+			
+			if (!sourcefolder || sourcefolder[0] == '\0') {
+				sourcefolder = &targetPath[0];
+				Warning("sourcefolder = %s",sourcefolder);
+			}
+			else {
+				Warning("sourcefolder = QC_STORAGE = %s", sourcefolder);
+			}
+			
+		}
+		//put source files in with vmf by default.
 		char SMDfilename[1024];
 		char QCfilename[1024];
 		char studioCommand[1024];
