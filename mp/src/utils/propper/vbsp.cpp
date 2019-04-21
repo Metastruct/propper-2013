@@ -2523,7 +2523,7 @@ int RunVBSP( int argc, char **argv )
 			if (studioCompile){
 				V_snprintf(QCfilename, 1024,"%s\\%s.qc", sourcefolder, m->qc_modelname);
 				V_StripTrailingSlash( &gamedir[0] );
-				V_snprintf(studioCommand, 1024,"studiomdl.exe -fullcollide -game \"%s\" \"%s\"", gamedir, QCfilename);
+				V_snprintf(studioCommand, 1024,"studiomdl.exe -nop4 -fullcollide -game \"%s\" \"%s\"", gamedir, QCfilename);
 				Q_AppendSlash( gamedir, sizeof( gamedir ) );//So retarded
 				Msg("Compiling the model:\n");
 				Msg(studioCommand);
@@ -2567,9 +2567,21 @@ int RunVBSP( int argc, char **argv )
 
 				// Close process and thread handles. 
 				CloseHandle( pi.hProcess );
+				
 				CloseHandle( pi.hThread );
-	//			Msg("\n----------------------\n");
-				Msg("Studiomdl complete!\n");
+				
+				
+
+				LPDWORD exitCode=0;
+				if (GetExitCodeProcess(procInfo.hProcess, &exitCode))
+				{
+				if (exitCode > 0) {
+					Error("Studiomdl failed: %d!\n",exitCode);
+					exit (1);
+				} else {
+					Msg("Studiomdl complete!\n");
+				}
+				
 			}
 		}
 	}
